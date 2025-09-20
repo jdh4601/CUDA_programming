@@ -33,8 +33,6 @@ nsys stats profile_report.nsys-rep
 ```
 
 결과:
-![[Screenshot 2025-09-20 at 5.05.15 PM.png]]
-
 ```bash
  ** CUDA API Summary (cudaapisum):
 
