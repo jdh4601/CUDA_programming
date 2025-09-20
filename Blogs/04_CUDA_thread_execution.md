@@ -139,11 +139,11 @@ gpu 메모리가 필요하다.
 cudaMallocManaged(&c, sizeof(int));
 ```
 
-개념은 cudaMemcpy와 같고, 단계가 간소화되었다.
-cache miss가 나면 os적으로 MMU라는 유닛이 판단한다.
-cudaDeviceSynchronize를 비동기적으로도 가능함. 캐시 남겨
-NVLink: cpu, gpu 연결해주는 것. 메모리에서 데이터를 얼마나 빨리 가져오는지?
-unified memory가 cache miss가 발생하면 들여다본다. -> Latency를 줄인다.
+개념은 cudaMemcpy와 같고, 단계가 간소화되었다.  
+cache miss가 나면 os적으로 MMU라는 유닛이 판단한다.  
+cudaDeviceSynchronize를 비동기적으로도 가능함.  
+NVLink: cpu, gpu 연결해주는 것. (메모리에서 데이터를 얼마나 빨리 가져오는지)  
+unified memory가 cache miss가 발생하면 들여다본다. -> Latency를 줄인다.  
 
 ---
 ## 2. Debugging
@@ -158,6 +158,7 @@ unified memory가 cache miss가 발생하면 들여다본다. -> Latency를 줄�
 >CPU보다 GPU는 버그를 찾기 어려운 환경에서 실행됨.
 >각 단계(할당, 복사, 런치, 동기화)마다 에러 체크가 중요함!
 >NVIDIA Nsight, cuda-gdb 등의 도구를 써서 쓰레드별 실행 추적하기도 함.
+
 ### cudaError_t 체크하기
 
 ```c title:기본문법
