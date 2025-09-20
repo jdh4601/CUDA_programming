@@ -22,8 +22,8 @@ nvcc main.cu -o main
 ```
 
 > [!NOTE] nvcc(NVIDIA CUDA Compiler)란?
-> CUDA 전용 컴파일러. C++과 kernel code로 나눈 후,
-> CPU용 C++ 코드는 gcc, clang 컴파일러가 실행되고
+> CUDA 전용 컴파일러. C++과 kernel code로 나눈 후,  
+> CPU용 C++ 코드는 gcc, clang 컴파일러가 실행되고  
 > GPU용 커널 코드는 PTX(Parallel Thread Execution) 코드와 GPU 바이너리 코드로 변환해서 하나의 실행 파일로 링크해준다.
 ## 2. host <-> device
 
@@ -62,29 +62,30 @@ int main(void) {
 `int *dev_c`로 선언한 포인터 변수의 타입을 맞춰준다. (int -> void**)
 
 `cudaMalloc((void**)&dev_c, sizeof(int));`
-cudaMalloc으로 만든 포인터는 GPU 글로벌 메모리에 공간을 만들고, 그 공간의 주소를 반환.
-device 메모리에 sizeof(int) 만큼 할당(4byte) -> 그 디바이스 주소를 &dev_c에 할당한다.
-device메모리를 핸들링하려면 커널 안에서 접근 or cudaMemcpy로 복사해서 다루기
+cudaMalloc으로 만든 포인터는 GPU 글로벌 메모리에 공간을 만들고, 그 공간의 주소를 반환.  
+device 메모리에 sizeof(int) 만큼 할당(4byte) -> 그 디바이스 주소를 &dev_c에 할당한다.  
+device메모리를 핸들링하려면 커널 안에서 접근 or cudaMemcpy로 복사해서 다루기.
 
-(절대 CPU 코드에서 디바이스 포인터를 역참조(`*dev_c`)해서 사용하면 안된다. 왜냐하면 GPU와CPU는 다른 메모리 공간을 가지므로 CPU입장에서는 가리키는 위치가 존재하지 않는 것처럼 보이기 때문이다.)
+(절대 CPU 코드에서 디바이스 포인터를 역참조(`*dev_c`)해서 사용하면 안된다. 
+왜냐하면 GPU와CPU는 다른 메모리 공간을 가지므로 CPU입장에서는 가리키는 위치가 존재하지 않는 것처럼 보이기 때문이다.)
 
 `add<<<1, 1>>>(2, 7, dev_c);`
-블록 1개, 블록 당 스레드 1개 커널을 비동기로 실행.
+블록 1개, 블록 당 스레드 1개 커널을 비동기로 실행.  
 dev_c라는 디바이스 주소값(포인터변수의 값)이 kernel로 넘겨준다.
 
 `cudaMemcpy(&c, dev_c, sizeof(int), cudaMemcpyDeviceToHost)`
-디바이스에서 호스트로 메모리에 접근할 때 cudaMemcpyDeviceToHost를 사용함.
+디바이스에서 호스트로 메모리에 접근할 때 cudaMemcpyDeviceToHost를 사용함.  
 디바이스 주소 dev_c에서 4byte를 읽어서 호스트 주소 &c로 가져온다.
 
 `cudaMemcpy()`: 
-호스트 포인터 -> 호스트 코드로부터 메모리에 접근 가능.
-디바이스 포인터 -> 디바이스 코드로부터 메모리 접근 가능.
+호스트 포인터 -> 호스트 코드로부터 메모리에 접근 가능.  
+디바이스 포인터 -> 디바이스 코드로부터 메모리 접근 가능.  
 >호스트 코드로부터 cudaMemcpy()를 통해 *디바이스 메모리에 접근* 가능
 
 `cudaFree(dev_c)`: 디바이스 메모리 해제
 ## 3. Querying Devices
 
-device가 얼마나 많은 메모리와 capability를 가지고 있는지 알기 어렵다.
+device가 얼마나 많은 메모리와 capability를 가지고 있는지 알기 어렵다.  
 >determine which processor is which!
 
 Warp: 
@@ -105,7 +106,7 @@ int main(void) {
 }
 ```
 
-`cudaGetErrorString(err)`: CUDA 에러를 사람이 읽을 수 있게 변환
+`cudaGetErrorString(err)`: CUDA 에러를 사람이 읽을 수 있게 변환  
 `cudaGetDeviceCount()`: CUDA를 실행하기 전에 얼마나 많은 device가 있는지 파악하기
 
 >결과: CUDA devices found: 5
@@ -146,6 +147,7 @@ struct cudaDeviceProp {
 ```
 
 *출력 결과*
+```
 Device 0: NVIDIA L40S
   Compute Capability: 8.9
   Global Memory: 45487 MB
@@ -153,6 +155,7 @@ Device 0: NVIDIA L40S
   Warp Size: 32 (동시에 실행되는 쓰레드 수)
   Max Threads per Block: 1024 (블록 당 최대 스레드 수)
   Max Grid Size: 2147483647 x 65535 x 65535
+```
 
 | 필드 이름              | 의미                                                                | 예시 출력                                    |
 | ------------------ | ----------------------------------------------------------------- | ---------------------------------------- |
@@ -179,6 +182,7 @@ std::cout << "Total memory: " << (totalMem >> 20) << " MB\n";
 ```
 
 *출력 결과*
+```
 Device 0: NVIDIA L40S
   Compute Capability: 8.9
   Global Memory: 45487 MB
@@ -188,7 +192,7 @@ Device 0: NVIDIA L40S
   Warp Size: 32
   Max Threads per Block: 1024
   Max Grid Size: 2147483647 x 65535 x 65535 -> 커널 실행 시 지정할 수 있는 블록 배열의 최대 크기
-
+```
 **constant memory**: GPU에 있는 읽기 전용 캐시 메모리 (약 64KB)
 **Global Memory / Total Memory**: GPU가 제공하는 전체 글로벌 메모리 용량 (약 48GB)
 **Free Memory**: 현재 사용 가능한 메모리 용량
