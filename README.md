@@ -11,7 +11,7 @@ GPU 병렬 프로그래밍과 스레드 동기화, 프로파일링까지 단계�
 4. [CUDA Thread Execution](./Blogs/04_CUDA_thread_execution.md) – 스레드 실행 구조  
 5. [Profiling and Thread Synchronization](./Blogs/05_Profiling_and_thread_syn.md) – 성능 분석과 동기화  
 6. [Memery Coalescing & Management](./Blogs/06_Memory_Management.md) - 메모리 효율 및 접근 방법
-7. [CUDA Technique](./Blogs/07_CUDA_Technique.md) - CUDA 라이브러리 및 병렬 & 분기 처리 방법
+7. [CUDA Technique](./Blogs/07_CUDA_technique.md) - CUDA 라이브러리 및 병렬 & 분기 처리 방법
 
 ## 📂 구조
 - **Blogs** – 단계별 학습 노트 (위 링크 참조)  
