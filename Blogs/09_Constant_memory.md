@@ -6,12 +6,12 @@
 
 ## 6.2 Constant Memory
 
-GPU의 연산에서 병목은 칩의 처리량이 아니라, *메모리 대역폭*때문에 발생한다.
+GPU의 연산에서 병목은 칩의 처리량이 아니라, *메모리 대역폭*때문에 발생한다.  
 GPU에 있는 많은 ALU 들어오는 input을 충분히 빠르게 처리할 수 없다.
 
 >memory traffic을 줄여야 한다.
 
-global & shared memory를 지금까지 사용해왔다
+global & shared memory를 지금까지 사용해왔다  
 constant memory는 메모리 대역폭을 줄일 수 있다. 
 - 읽기 전용 메모리.
 - 모든 쓰레드에서 접근 가능
@@ -33,18 +33,18 @@ constant memory는 메모리 대역폭을 줄일 수 있다.
 > 48KB에 불과.
 ### Ray tracing on the GPU
 
-3차원 장면에서 2차원 이미지를 생성하는 렌더링 방식.
-각 pixel을 향해 ray를 쏘고, 그 광선이 3D장면의 오브젝트를 추적하는 것.
+3차원 장면에서 2차원 이미지를 생성하는 렌더링 방식.  
+각 pixel을 향해 ray를 쏘고, 그 광선이 3D장면의 오브젝트를 추적하는 것.  
 
 ![img](../Img/9_1.png)
 
-2d image에서 각 픽셀이 
-각 픽셀마다 3D장면으로 간다.
+2d image에서 각 픽셀이 각 픽셀마다 3D장면으로 간다.  
 3개의 녹색 화살표가 다른 픽셀에서 출발한 view ray이다.
 
-우리 눈: 광원 -> 물체 -> 눈
-![img](../Img/9_2.png)
-레이 트레이싱: 눈 -> 물체 -> 광원
+우리 눈: 광원 -> 물체 -> 눈  
+![img](../Img/9_2.png)  
+
+레이 트레이싱: 눈 -> 물체 -> 광원  
 ![img](../Img/9_3.png)
 
 중요한 것: 어떤 ray이 pixel을 hit하는가?
@@ -146,33 +146,33 @@ cudaMemcpy: global memory에 복사한다.
 - single read가 거의 다른 쓰레드에 broadcast할 수 있다. (15read를 세이브)
 - constant memory는 cached되어, 같은 주소를 연속적인 읽기는 추가적인 메모리 traffic을 유발하지 않는다.
 
->half-warp: 16개의 쓰레드 그룹
+>half-warp: 16개의 쓰레드 그룹  
 >한 warp안의 쓰레드들은 다른 데이터에서 같은 instruction을 수행한다.
 
 #### half-warp broadcast
 NVIDIA 하드웨어는 single memory를 읽을 수 있게 half-warp로 브로드캐스트한다.
 
-모든 스레드가 같은 주소 읽기:
-Thread 0: s[0] 읽기 요청
-Thread 1: s[0] 읽기 요청  
-Thread 2: s[0] 읽기 요청
+모든 스레드가 같은 주소 읽기:  
+Thread 0: s[0] 읽기 요청  
+Thread 1: s[0] 읽기 요청    
+Thread 2: s[0] 읽기 요청  
 ...
-Thread 15: s[0] 읽기 요청
+Thread 15: s[0] 읽기 요청  
 
 1. 대역폭 절감
 GPU가 1번만 읽어서 16개에게 broadcast시키면, 메모리 traffic이 1/16으로 감소한다.
 2. 캐싱 효과
-처음에는 constant memory에서 가져와 캐시에 저장한다.
-이후, 모든 쓰레드가 캐시에서 data를 읽는다.
+처음에는 constant memory에서 가져와 캐시에 저장한다.  
+이후, 모든 쓰레드가 캐시에서 data를 읽는다.  
 
 ### 단점
 만약 16개의 모든 쓰레드가 다른 주소를 읽으면...?
 
-Thread 0: s[0] 읽기
-Thread 1: s[1] 읽기  
-Thread 2: s[2] 읽기
+Thread 0: s[0] 읽기  
+Thread 1: s[1] 읽기    
+Thread 2: s[2] 읽기  
 ...
-Thread 15: s[15] 읽기
+Thread 15: s[15] 읽기  
 
 >16개의 요청이 serialized된다. (global memory보다 느림)
 
@@ -212,14 +212,14 @@ cudaEventRecord(stop, 0); // -> GPU 작업이 종료됨
 
 CUDA C는 비동기적이기 때문에 발생한다.
 #### CPU
-`cudaEventRecord(start, 0)`: GPU 큐에 start 기록 명령 추가
--> `kernel<<<>>>()`: GPU 큐에 kernel 작업 추가
--> `cudaEventRecord(stop, 0)`: GPU 큐에 stop 기록 명령 추가
--> GPU가 안끝났는데 계속 다음 코드를 실행
+`cudaEventRecord(start, 0)`: GPU 큐에 start 기록 명령 추가  
+-> `kernel<<<>>>()`: GPU 큐에 kernel 작업 추가  
+-> `cudaEventRecord(stop, 0)`: GPU 큐에 stop 기록 명령 추가  
+-> GPU가 안끝났는데 계속 다음 코드를 실행  
 #### GPU
-start 기록 실행
--> kernel 실행 
--> stop 기록 실행
+start 기록 실행  
+-> kernel 실행   
+-> stop 기록 실행  
 
 ### 해결책
 
