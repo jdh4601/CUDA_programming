@@ -12,7 +12,7 @@ __global__ void vectorAdd(float *A, float *B, float *C, int N)
 int main()
 {
     int N = 1000;
-    size_t size = N * sizeof(float); // 1000 x 4byte
+    size_t size = N * sizeof(float);
     
     // 1. 호스트 메모리 할당
     float *h_A = (float*)malloc(size);
